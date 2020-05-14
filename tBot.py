@@ -15,7 +15,8 @@ async def main():
     await client.connect()
     async for message in client.iter_messages(chat,
      reverse=True):
-
+        
+        #Excluding non media messages
         if (not message.media or
          not message.document or message.sticker):
             continue
