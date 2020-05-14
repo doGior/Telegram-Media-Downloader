@@ -12,10 +12,11 @@ if(not path.isdir(download_folder)):
 
 
 async def main():
+    '''Download every media in a chat'''
     await client.connect()
     async for message in client.iter_messages(chat,
      reverse=True):
-        
+
         #Excluding non media messages
         if (not message.media or
          not message.document or message.sticker):
@@ -37,13 +38,14 @@ async def main():
          stat(file).st_size == message.size):
             continue
 
-        #Download the file and print the progressbar
+        #Download the file
         print(file_name)
         await client.download_media(message,
             file=file, progress_callback=ProgressBar)
 
 
 def ProgressBar (iteration, total):
+    ''' Print a progress bar '''
     percent = round(iteration/total*100, 1)
     filledLength = 100 * iteration // total
     bar = "#" * filledLength + '-' * (100 - filledLength)
@@ -54,6 +56,7 @@ def ProgressBar (iteration, total):
 
 
 def SortingFolder(mime_type, download_path):
+    ''' Sort every file by type putting it in a folder '''
     if(mime_type == 'video/mp4'):
         new_path = path.join(download_path,"Video/")
         if ("Video" not in listdir(download_path)):
