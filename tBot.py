@@ -12,7 +12,7 @@ if(not path.isdir(download_folder)):
 
 
 async def main():
-    '''Download every media in a chat'''
+    ''' Download every media in a chat '''
     await client.connect()
     async for message in client.iter_messages(chat,
      reverse=True):
