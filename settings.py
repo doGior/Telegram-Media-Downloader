@@ -6,4 +6,4 @@ api_hash = '0123456789abcdef0123456789abcdef'
 chat = "chat link or username or id ord contact"
 
 #Folder in which files will be stored
-download_folder = "download/"
+download_folder = "Downloads/"
