@@ -1,7 +1,6 @@
 import asyncio
 from telethon import TelegramClient
 from os import listdir, stat, mkdir, path
-from datetime import date
 from re import sub
 from settings import *
 
