@@ -8,8 +8,9 @@ chat = "chat link or username or id ord contact"
 #Folder in which files will be stored
 download_folder = "Downloads/"
 
-#Data from which messages will be downloaded
-import datetime
-#It has to be a date object or
-#None to download all the media from the chat
-start_date = datetime.date.today()
+
+
+#DANGER
+#Commands linked to the files which download or remove media
+cmds = {"/download": "download.py", "/remove" : "remove.py",
+ "/download_Today": "download.py", "/removeAll" : "remove.py"}
