@@ -1,6 +1,5 @@
 # Telegram-Media-Downloader
-This is a bot that will download all the media from a given chat
-
+This is a bot that will download all the media from a given chat<br/>
 **Note:** all the media have to be sent as document
 
 ## Installation
@@ -13,7 +12,7 @@ pip install -r requirements.txt
 Then you have to edit the settings.py with your information and run main.py
 
 ## Commands
-You can send text message on telegram for modifying the bot's beheavior 
+You can send text message on telegram for modifying the bot's beheavior<br/>
 By default there are six commands:
 
 * */downloadAll* --> Will download all the media from the selected chat
