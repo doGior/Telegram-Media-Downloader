@@ -1,5 +1,7 @@
 # Telegram-Media-Downloader
-This is a bot that will download all the media from a given chat<br/>
+This is a bot that will download all the media from a given chat.<br/>
+When a media is sent to the specified chat it will be downloaded and when that<br> message will be deleted from the chat the file will be deleted also from the pc <br>
+
 **Note:** all the media have to be sent as document
 
 ## Installation
