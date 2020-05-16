@@ -1,68 +1,131 @@
 import asyncio
-from telethon import TelegramClient
 from os import listdir, stat, mkdir, path
 from re import sub
 from settings import *
+import db_manager as dbm
 
-client = TelegramClient('anon', api_id, api_hash)
+async def download(client, message, db_conn):
+    """ (TelegramClient object, Message object, Connection object) --> None
+    Download the media from the message provided
 
-#Checking if download path exist
-if(not path.isdir(download_folder)):
-    mkdir(download_folder)
+    client:  TelegramClient object [telethon]
+    message: Message object [telethon]
+    db_conn: Connection object [sqlite3]
+    return: None
+    """
+
+    # Making data easier to access
+    message_id = message.id
+    message = message.document
+    file_name = message.attributes[-1].file_name
+
+    # Delete tags in file name if there are
+    file_name = sub('^\.*@[A-Za-z0-9]+ ', '', file_name) 
+
+    # Path to file
+    file = SortingFolder(message.mime_type, download_folder)
+    file += file_name
+
+    # Skip file already downloaded
+    if(file_name in listdir(download_folder) and
+        stat(file).st_size == message.size):
+        print("File already downloaded")
+        return None
+
+    # Download the file
+    print(file_name)
+    await client.download_media(message,
+        file=file, progress_callback=ProgressBar)
+
+    # Writing Database    
+    with db_conn:
+        add_file = (message_id, file)
+        dbm.insert_message(db_conn, add_file)
 
 
-async def main():
-    ''' Download every media in a chat '''
-    await client.connect()
-    async for message in client.iter_messages(chat,
-     reverse=True):
 
-        #Excluding non media messages
+async def downloadAll(client, db_conn, start_date = None, media_type = None):
+    ''' (TelegramClient object, Connection object, Date object, string) --> string
+    Download every media in a chat
+
+    client:  TelegramClient object [telethon]
+    db_conn: Connection object [sqlite3]
+    start_date: date since when to start downloading files, 
+     it has to be a Date object [datetime]
+    media_type: filter for dowload only one type of media
+    return: None
+    '''
+    async for message in client.iter_messages(chat, reverse=True,
+     offset_date=start_date):
+
+        # Excluding non media messages
         if (not message.media or
-         not message.document or message.sticker):
+         message.sticker):
             continue
         
-        #Make variariabile easier to access
+        # Skipping media not wanted
+        if(message.document.mime_type != media_type):
+            if media_type:
+                continue
+        
+        # Making data easier to access
+        message_id = message.id
         message = message.document
         file_name = message.attributes[-1].file_name
 
-        #Delete tags in file name if there are
+        # Delete tags in file name if there are
         file_name = sub('^\.*@[A-Za-z0-9]+ ', '', file_name) 
 
-        #Path to file
+        # Path to file
         file = SortingFolder(message.mime_type, download_folder)
         file += file_name
 
-        #Skip file already downloaded
+        # Skip file already downloaded
         if(file_name in listdir(download_folder) and
          stat(file).st_size == message.size):
+            print("File already downloaded")
             continue
 
-        #Download the file
+        # Download the file
         print(file_name)
         await client.download_media(message,
             file=file, progress_callback=ProgressBar)
+        
+        # Writing Database    
+        with db_conn:
+            add_file = (message_id, file)
+            dbm.insert_message(db_conn, add_file)
 
 
 def ProgressBar (iteration, total):
-    ''' Print a progress bar '''
-    percent = round(iteration/total*100, 1)
+    ''' (int, int) --> None
+    Print a progress bar on the console
+
+    iteration: the size of the downloaded part
+    total: the size of the total file '''
+    percent = round(iteration / total * 100, 1)
     filledLength = 100 * iteration // total
     bar = "#" * filledLength + '-' * (100 - filledLength)
     print('\r%s |%s| %s%% %s' % ('', bar, percent, ''), end = "\r")
-    # Print New Line on Complete
+    # Print a blank line on complete
     if (iteration == total): 
         print("\n")
 
 
 def SortingFolder(mime_type, download_path):
-    ''' Sort every file by type putting it in a folder '''
+    ''' (string, string) --> string
+    Sort every file by type putting it in a folder 
+    
+    mime_type: mime_type attribute of the Message object [telethon]
+    download_path: path to the main download folder
+    return: complete path to the file '''
     if(mime_type == 'video/mp4'):
         new_path = path.join(download_path,"Video/")
         if ("Video" not in listdir(download_path)):
             mkdir((new_path))
 
-    elif(mime_type == 'image/png'):
+    elif(mime_type == 'image/png' or
+    mime_type == 'image/jpeg'):
         new_path = path.join(download_path,"Pictures/")
         if ("Pictures" not in listdir(download_path)):
             mkdir((new_path))
@@ -78,13 +141,3 @@ def SortingFolder(mime_type, download_path):
             mkdir((new_path))
 
     return new_path
-
-
-
-if __name__ == "__main__":
-    with client:
-        try:
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(main())
-        except KeyboardInterrupt:
-            pass
