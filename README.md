@@ -7,7 +7,7 @@ When a media is sent to the specified chat it will be downloaded and when that<b
 ## Installation
 Run this on your shell
 ```
-git clone "https://github.com/KalleHallden/ProjectInitializationAutomation.git"
+git clone "https://github.com/doGior/Telegram-Media-Downloader"
 cd ProjectInitializationAutomation
 pip install -r requirements.txt
 ```
