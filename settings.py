@@ -12,5 +12,6 @@ download_folder = "Downloads/"
 
 #DANGER
 #Commands linked to the files which download or remove media
-cmds = {"/download": "download.py", "/remove" : "remove.py",
- "/download_Today": "download.py", "/removeAll" : "remove.py"}
+cmds = ["/downloadAll", "/downloadToday",
+        "/downloadImages", "/downloadVideo","/downloadMusic",
+        "/downloadWhenArrive", "/stopDownloadWhenArrive"]
