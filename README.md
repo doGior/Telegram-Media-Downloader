@@ -8,7 +8,7 @@ When a media is sent to the specified chat it will be downloaded and when that<b
 Run this on your shell
 ```
 git clone "https://github.com/doGior/Telegram-Media-Downloader"
-cd ProjectInitializationAutomation
+cd Telegram-Media-Downloader
 pip install -r requirements.txt
 ```
 Then you have to edit the settings.py with your information and run main.py
