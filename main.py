@@ -32,6 +32,19 @@ conn.commit()
 # Inizializing the Telegram client
 client = TelegramClient('anon', api_id, api_hash)
 
+async def Hello():
+    await client.send_message(chat, "**Bot Activated!**😀\n" +
+        "I will download every media sent in this chat\n\n" +
+        "Here are the avaible commands:\n" +
+        "**/downloadAll** --> Will download all the media from the selected chat\n" +
+        "**/downloadToday** --> Will download all the media sen today from the selected chat\n" +
+        "**/downloadImages** --> Will download all the Images from the selected chat\n" +
+        "**/downloadVideo** --> Will download all the Videos from the selected chat\n" +
+        "**/downloadMusic** --> Will download all the Audio file from the selected chat\n" +
+        "**/downloadWhenArrive** --> Will download every media immediately when it arrive; it's True by default\n" +
+        "**/stopDownloadWhenArrive** --> Will stop downloading every media immediately when it arrive")
+    print("Message sent")
+
 # Binding every command from settings.py with a function
 actions = {cmds[0]: download.downloadAll(client, conn),
             cmds[1]: download.downloadAll(client, conn, start_date=date.today()),
@@ -81,4 +94,5 @@ async def RemoveHandler(event):
 
 #Running the program
 with client:
+    client.loop.run_until_complete(Hello())
     client.run_until_disconnected()
