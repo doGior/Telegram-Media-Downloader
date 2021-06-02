@@ -57,12 +57,14 @@ def delete_message(conn, id):
     id: message id [telethon]
     return: file path
     """
+    cur = conn.cursor()
     sql1 = "SELECT File_Path FROM id_to_file WHERE Message_Id=?"
     sql2 = "DELETE FROM id_to_file WHERE Message_Id=?"
-    cur = conn.cursor()
     cur.execute(sql1, (id,))
-    file_path = cur.fetchone()[0]
+    file_path = cur.fetchone()
+    if not file_path:
+        return ""
     cur.execute(sql2, (id,))
     conn.commit()
     #print("Row Deleted")
-    return file_path
+    return file_path[0]
