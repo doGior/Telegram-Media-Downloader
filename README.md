@@ -11,7 +11,7 @@ git clone "https://github.com/doGior/Telegram-Media-Downloader"
 cd Telegram-Media-Downloader
 pip install -r requirements.txt
 ```
-Then you have to edit the settings.py with your information and run main.py
+Then you have to edit the settings.py with your information and run `python3 main.py` on your shell
 
 ## Commands
 You can send text message on telegram for modifying the bot's beheavior<br/>

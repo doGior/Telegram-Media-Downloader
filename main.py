@@ -6,6 +6,7 @@ from telethon import TelegramClient, events
 import db_manager as dbm
 import download
 from settings import *
+from queue import Queue
 
 # Initializing the Telegram client
 client = TelegramClient('anon', api_id, api_hash)
@@ -26,9 +27,9 @@ async def hello():
 
 
 @client.on(events.NewMessage(chats=chat))
-async def download_handler(event):
-    # Referencing to the global variable
-    global instant_download
+async def new_message_handler(event):
+    # Referencing to the global variables
+    global instant_download, queue
 
     # Making data easier to access
     message = event.message
@@ -42,14 +43,28 @@ async def download_handler(event):
         instant_download = False
 
     # Checking if the message is a media and,
-    #  if we can, downloading it immediately
+    #  if we can, adding it to the queue
+    # and downloading it
     if (instant_download and message.media
             and not message.sticker):
-        await download.download(client, message, conn)
+        queue.enqueue(message)
+        await download_handler()
+
     # If the message is a text checking
     #  if it is a command and executing it
     elif text in cmds:
         await actions[text]
+
+
+async def download_handler():
+    # Referencing to the global variables
+    global client, queue, conn, is_downloading
+
+    # Stopping if one media is downloading
+    if not is_downloading:
+        is_downloading = True
+        await download.download(client, queue, conn)
+        is_downloading = False
 
 
 @client.on(events.MessageDeleted(chats=chat))
@@ -58,7 +73,10 @@ async def remove_handler(event):
     #  to a deleted Telegram's message
     for msg_id in event.deleted_ids:
         file = dbm.delete_message(conn, msg_id)
-        remove(file)
+        if(file != ""):
+            remove(file)
+        else:
+            print("The message wasn't in database and thus it isn't deleted")
 
 
 if __name__ == "__main__":
@@ -93,6 +111,8 @@ if __name__ == "__main__":
     # Initializing the download immediately when a message arrive
     instant_download = True
 
+    queue = Queue()
+    is_downloading = False
     # Running the program
     with client:
         client.loop.run_until_complete(hello())
