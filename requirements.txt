@@ -21,7 +21,7 @@ pycares==3.1.1
 pycosat==0.6.3
 pycparser==2.20
 pyspeedtest==1.2.7
-requests==2.24.0
+requests==2.31.0
 rsa==4.7
 ruamel.yaml==0.16.12
 ruamel.yaml.clib==0.2.2
